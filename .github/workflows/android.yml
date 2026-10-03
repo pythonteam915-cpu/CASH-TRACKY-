@@ -23,6 +23,7 @@ jobs:
       - name: Install Capacitor
         run: |
           npm install @capacitor/core @capacitor/cli @capacitor/android
+          --legacy-peer-deps
 
       - name: Create Capacitor config
         run: |
