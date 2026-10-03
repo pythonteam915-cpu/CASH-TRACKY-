@@ -1,0 +1,103 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with monthly budget goal preferences",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Firebase Auth UID of the user"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name of the user"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "User profile picture URL"
+        },
+        "monthlyBudget": {
+          "type": "number",
+          "description": "Target monthly spending budget in USD"
+        },
+        "customCategories": {
+          "type": "array",
+          "description": "List of user-defined custom categories"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when account record was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when settings were last modified"
+        }
+      },
+      "required": ["id", "email", "monthlyBudget"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "An expense or income transaction entry",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique transaction ID"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title or description of the transaction"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Amount in USD"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["expense", "income"],
+          "description": "Type of transaction: expense or income"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the transaction"
+        },
+        "date": {
+          "type": "string",
+          "description": "Date of transaction (YYYY-MM-DD)"
+        },
+        "merchant": {
+          "type": "string",
+          "description": "Optional merchant name"
+        },
+        "note": {
+          "type": "string",
+          "description": "Optional notes"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp of creation"
+        }
+      },
+      "required": ["id", "userId", "title", "amount", "type", "category", "date"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "#/entities/User",
+      "description": "User profile document containing user preferences and monthly budget goal"
+    },
+    "/users/{userId}/transactions/{transactionId}": {
+      "schema": "#/entities/Transaction",
+      "description": "Subcollection of all income and expense transactions for the user"
+    }
+  }
+}

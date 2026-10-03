@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    background-color: #f6f8fd;
+    color: #1e293b;
+    overflow-x: hidden;
+  }
+}
+
+/* Light Glass-Prism styling */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.08);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.02);
+}
+
+.glass-card:hover {
+  border-color: rgba(167, 139, 250, 0.5);
+  box-shadow: 0 14px 30px -5px rgba(99, 102, 241, 0.14);
+}
+
+.glass-prism-hero {
+  background: radial-gradient(120% 140% at 10% 0%, rgba(245, 243, 255, 0.95) 0%, rgba(238, 242, 255, 0.9) 50%, rgba(253, 242, 248, 0.85) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1.5px solid rgba(167, 139, 250, 0.45);
+  box-shadow: 0 20px 45px -15px rgba(99, 102, 241, 0.18), inset 0 1px 3px 0 rgba(255, 255, 255, 1);
+}
+
+.glass-bottom-nav {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 -8px 30px -6px rgba(99, 102, 241, 0.12);
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
