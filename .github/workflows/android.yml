@@ -1,4 +1,4 @@
-name: Build Android AAB
+name: Build CASH TRACKY Android
 
 on:
   workflow_dispatch:
@@ -11,44 +11,83 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout project
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Build React Vite app
-        run: npm run build
-
-      - name: Install Capacitor
+      - name: Extract CASH TRACKY ZIP
         run: |
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-          --legacy-peer-deps
+          rm -rf build-src
+          mkdir build-src
+          unzip -q cash-tracky.zip -d build-src
 
-      - name: Create Capacitor config
-        run: |
-          npx cap init "Cash Tracky" "com.cashtracky.app" --web-dir dist
+          GRADLEW=$(find build-src -type f -name gradlew -print -quit)
 
-      - name: Add Android platform
-        run: npx cap add android
+          if [ -z "$GRADLEW" ]; then
+            echo "ERROR: Android project not found inside cash-tracky.zip"
+            exit 1
+          fi
 
-      - name: Sync web app to Android
-        run: npx cap sync android
+          ANDROID_DIR=$(dirname "$GRADLEW")
+          PROJECT_DIR=$(dirname "$ANDROID_DIR")
+
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          echo "ANDROID_DIR=$ANDROID_DIR" >> "$GITHUB_ENV"
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
-      - name: Build Android AAB
-        working-directory: android
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK 36
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Restore Firebase configuration
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -z "$GOOGLE_SERVICES_JSON" ]; then
+            echo "ERROR: GOOGLE_SERVICES_JSON secret is missing."
+            exit 1
+          fi
+
+          printf '%s' "$GOOGLE_SERVICES_JSON" > "$PROJECT_DIR/android/app/google-services.json"
+
+      - name: Install dependencies
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: bun install
+
+      - name: Build web app
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: bun run build
+
+      - name: Sync Capacitor Android
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: bunx cap sync android
+
+      - name: Build Android APK and AAB
+        working-directory: ${{ env.ANDROID_DIR }}
         run: |
           chmod +x gradlew
-          ./gradlew bundleRelease
+          ./gradlew assembleDebug bundleRelease
 
-      - name: Upload AAB
+      - name: Upload Android files
         uses: actions/upload-artifact@v4
         with:
-          name: cash-tracky-release
-          path: android/app/build/outputs/bundle/release/*.aab
+          name: CASH-TRACKY-Android
+          path: |
+            ${{ env.PROJECT_DIR }}/android/app/build/outputs/apk/debug/app-debug.apk
+            ${{ env.PROJECT_DIR }}/android/app/build/outputs/bundle/release/app-release.aab
